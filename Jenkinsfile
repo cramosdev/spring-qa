@@ -6,7 +6,7 @@ pipeline{
     }
    environment {
       registryCredential='docker-hub-credentials'
-      registryBackend = 'cramos/backend-demo'
+      registryBackend = 'cramosdev/backend-demo'
     }
     
     stages {
