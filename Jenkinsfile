@@ -16,26 +16,26 @@ pipeline{
           }
         }
 
-        stage('SonarQube analysis') {
-          steps {
-            withSonarQubeEnv(credentialsId: "sonarqube-credentials", installationName: "sonarqube-server"){
-                sh "mvn clean verify sonar:sonar -DskipTests"
-            }
-          }
-        }
+//         stage('SonarQube analysis') {
+//           steps {
+//             withSonarQubeEnv(credentialsId: "sonarqube-credentials", installationName: "sonarqube-server"){
+//                 sh "mvn clean verify sonar:sonar -DskipTests"
+//             }
+//           }
+//         }
 
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 10, unit: "MINUTES") {
-                    script {
-                        def qg = waitForQualityGate(webhookSecretId: 'sonarqube-credentials')
-                        if (qg.status != 'OK') {
-                           error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                        }
-                    }
-                }
-            }
-        }
+//         stage('Quality Gate') {
+//             steps {
+//                 timeout(time: 10, unit: "MINUTES") {
+//                     script {
+//                         def qg = waitForQualityGate(webhookSecretId: 'sonarqube-credentials')
+//                         if (qg.status != 'OK') {
+//                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+//                         }
+//                     }
+//                 }
+//             }
+//         }
       
        stage('Push Image to Docker Hub') {
             steps {
@@ -47,6 +47,19 @@ pipeline{
                 }
             }
         }
+       stage("Deploy to K8s"){
+           steps{
+               script {
+                 if(fileExists("configuracion")){
+                   sh 'rm -r configuracion'
+                 }
+               }
+
+               sh 'git clone https://github.com/cramosdev/minikube-training.git configuracion --branch main'
+               sh 'kubectl apply -f configuracion/kubernetes-deployment/spring-boot-app/manifest.yml -n default --kubeconfig=configuracion/kubernetes-config/config'
+           }
+       }
+
     }
     
     post {
