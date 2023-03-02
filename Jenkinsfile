@@ -64,12 +64,12 @@ pipeline{
            steps{
                node("jenkins-nodejs"){
                    script {
-                       if(fileExists("spring-boot-app")){
-                           sh 'rm -r spring-boot-app'
+                       if(fileExists("spring-qa")){
+                           sh 'rm -r spring-qa'
                        }
                        sleep 15 // seconds
                        sh 'git clone https://github.com/cramosdev/spring-qa.git --branch master'
-                       sh 'newman run spring-boot-app/src/main/resources/postman_api_test.json --reporters cli,junit --reporter-junit-export "newman/report.xml"'
+                       sh 'newman run spring-qa/src/test/resources/postman_api_test.json --reporters cli,junit --reporter-junit-export "newman/report.xml"'
                        junit "newman/report.xml"
                    }
                }
