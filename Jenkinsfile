@@ -55,7 +55,7 @@ pipeline{
                  }
                }
 
-               sh 'git clone https://github.com/cramosdev/minikube-training.git configuracion --branch main'
+               sh 'git clone https://github.com/cramosdev/minikube-training.git configuracion --branch master'
                sh 'kubectl apply -f configuracion/kubernetes-deployment/spring-boot-app/manifest.yml -n default --kubeconfig=configuracion/kubernetes-config/config'
            }
        }
